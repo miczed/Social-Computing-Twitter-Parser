@@ -1,6 +1,7 @@
 Social-Computing-Twitter-Parser
 
 #Setup
+
 Since this script is using PHP you need to be able to run [php locally](http://php.net/manual/en/install.php).
 You need [composer](https://getcomposer.org/doc/00-intro.md) in order to install the dependencies for the projects. 
 You also need a [twitter developer account](https://dev.twitter.com/) and valid keys.
@@ -17,3 +18,16 @@ define('API_CONSUMER_SECRET','your-valid-key');
 define('API_ACCESS_TOKEN','your-valid-key');
 define('API_TOKEN_SECRET','your-valid-key');
 ````
+
+#Data
+
+### Input Data
+
+We collected the twitter account of the highest government officials of all the countries.
+You can find the list of all twitter handles, real names and countries in `data/user_sources.csv`.
+
+### Output Data
+
+We then fetched all the information from their twitter accounts and stored them in a CSV file: `data/users.csv.`
+
+**Note**: We added a field called `date_crawled` in which we store the date / time when we fetched the data.  
