@@ -1,0 +1,14 @@
+{
+    "name": "miczed/soco-twitter",
+    "description": "A twitter parser which parses tweets of presidents and stores them in a MYSQL db",
+    "type": "project",
+    "require": {
+        "abraham/twitteroauth": "^0.6.6"
+    },
+    "authors": [
+        {
+            "name": "Michael Ziörjen",
+            "email": "mighty.miczed@gmail.com"
+        }
+    ]
+}
