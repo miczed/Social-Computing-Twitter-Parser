@@ -24,10 +24,7 @@ foreach($user_sources as $index=>$user_source) {
     if($userData) {
         writeToCSV("data/users.csv",[$userData]);
     }
-    if($index != $user_sources_length - 2) {
-        print_r("Waiting for 60s, so we don't exceed twitter limit \n");
-        sleep(60);
-    }
+
 }
 
 writeToCSV("data/users.csv",$userData);
@@ -45,6 +42,8 @@ function getUser($screen_name,$connection) {
     if($user->id) {
         print_r("SUCCESS \n");
         return [$user->id,$user->screen_name,$user->name,$user->location, $user->description, $user->followers_count, $user->friends_count,$user->created_at, $user->verified, $user->lang,$user->profile_image_url,getCurrentDate()];
+    } elseif($user->error) {
+      print_r($user->error);
     } else {
         print_r("FAIL\n");
         print_r($user);
