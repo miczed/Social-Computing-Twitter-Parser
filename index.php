@@ -10,7 +10,7 @@ print_r("Connecting to twitter API ...\n");
 
 $connection = new TwitterOAuth(API_CONSUMER_KEY, API_CONSUMER_SECRET,API_ACCESS_TOKEN,API_TOKEN_SECRET );
 
-//crawlTweets("data/users.csv","data/tweets.csv","data/mentions.csv",$connection);
+crawlTweets("data/users.csv","data/tweets.csv","data/mentions.csv",$connection);
 //crawlUsers("data/user_sources.partial.csv","data/users.csv",$connection);
 
 
@@ -32,7 +32,7 @@ function crawlTweets($source_csv,$tweets_csv,$mentions_csv,$connection) {
 function getTweets($screen_name,$connection) {
     $screen_name = cleanTwitterName($screen_name);
     print_r("Getting tweets from user $screen_name from Twitter ...");
-    $tweets = $connection->get("statuses/user_timeline", ["screen_name" => $screen_name,"trim_user" => true]);
+    $tweets = $connection->get("statuses/user_timeline", ["screen_name" => $screen_name,"trim_user" => true, "count" => 200, "include_rts" => 1]);
     if($tweets) {
         $csvData = [[],[]]; // tweets, user_mentions
         foreach($tweets as $tweet) {
