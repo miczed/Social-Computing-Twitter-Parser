@@ -5,36 +5,78 @@ require_once "keys.php";
 
 use Abraham\TwitterOAuth\TwitterOAuth;
 
-// don't do more than 15 calls per 15 minutes (1 call every 1 minute should be enough)
 
-print_r("Connecting to twitter API ...");
+print_r("Connecting to twitter API ...\n");
 
 $connection = new TwitterOAuth(API_CONSUMER_KEY, API_CONSUMER_SECRET,API_ACCESS_TOKEN,API_TOKEN_SECRET );
-//$tweets = $connection->get("statuses/user_timeline", ["screen_name" => "realDonaldTrump", "count" => 1, "trim_user" => true]);
+
+//crawlTweets("data/users.csv","data/tweets.csv","data/mentions.csv",$connection);
+//crawlUsers("data/user_sources.partial.csv","data/users.csv",$connection);
 
 
-$user_sources = readCSV("data/user_sources.partial.csv");
+function crawlTweets($source_csv,$tweets_csv,$mentions_csv,$connection) {
+    $user_sources = readCSV($source_csv);
+    foreach($user_sources as $index=>$user_source) {
 
-$user_sources_length = count($user_sources);
+        $tweets = getTweets($user_source[1],$connection);
 
-foreach($user_sources as $index=>$user_source) {
-    print_r("Getting user data for:\n");
-    $userData = getUser($user_source[1],$connection);
+        if($tweets) {
+            writeToCSV($tweets_csv,$tweets[0]);
+            writeToCSV($mentions_csv,$tweets[1]);
+        }
 
-    if($userData) {
-        writeToCSV("data/users.csv",[$userData]);
     }
-
 }
 
-writeToCSV("data/users.csv",$userData);
-print_r("Finished execution \n");
 
-function getUser($screen_name,$connection) {
+function getTweets($screen_name,$connection) {
+    $screen_name = cleanTwitterName($screen_name);
+    print_r("Getting tweets from user $screen_name from Twitter ...");
+    $tweets = $connection->get("statuses/user_timeline", ["screen_name" => $screen_name,"trim_user" => true]);
+    if($tweets) {
+        $csvData = [[],[]]; // tweets, user_mentions
+        foreach($tweets as $tweet) {
+            $csvData[0][] = [$tweet->id,$tweet->user->id,$tweet->created_at,$tweet->text,$tweet->source,$tweet->retweet_count,$tweet->favorite_count,$tweet->lang,getCurrentDate()];
+            foreach($tweet->entities->user_mentions as $user_mention) {
+                $csvData[1][] = [$tweet->id,$tweet->user->id,$user_mention->screen_name,$user_mention->name,$user_mention->id];
+            }
+        }
+        print_r("SUCCESS \n");
+        return $csvData;
+    } else {
+        print_r("FAIL \n");
+        return null;
+    }
+}
 
+
+function crawlUsers($source_csv,$target_csv,$connection) {
+    $user_sources = readCSV($source_csv);
+
+    $user_sources_length = count($user_sources);
+
+    foreach($user_sources as $index=>$user_source) {
+        print_r("Getting user data for:\n");
+        $userData = getUser($user_source[1],$connection);
+
+        if($userData) {
+            writeToCSV($target_csv,[$userData]);
+        }
+
+    }
+}
+
+
+function cleanTwitterName($screen_name) {
     $screen_name = trim($screen_name);
     $screen_name = preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $screen_name);
     $screen_name = ltrim($screen_name, '@');
+    return $screen_name;
+}
+
+function getUser($screen_name,$connection) {
+
+    $screen_name = cleanTwitterName($screen_name);
     print_r("Getting user $screen_name from Twitter ...");
 
     $user = $connection->get("users/show", ["screen_name" => $screen_name]);
