@@ -84,7 +84,7 @@ function readCSV($url) {
     if (($handle = fopen($url, "r")) !== FALSE) {
         print_r("SUCCESS\n");
         while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-            if($row!=0) {
+            if($row!=0) { // skip first row
                 $readData[$row] = $data;
             }
 
