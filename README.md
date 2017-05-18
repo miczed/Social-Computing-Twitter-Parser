@@ -1,6 +1,6 @@
 Social-Computing-Twitter-Parser
 
-#Setup
+##Setup
 
 Since this script is using PHP you need to be able to run [php locally](http://php.net/manual/en/install.php).
 You need [composer](https://getcomposer.org/doc/00-intro.md) in order to install the dependencies for the projects. 
@@ -19,7 +19,7 @@ define('API_ACCESS_TOKEN','your-valid-key');
 define('API_TOKEN_SECRET','your-valid-key');
 ````
 
-#Data
+##Data
 
 ### Input Data
 
@@ -28,6 +28,12 @@ You can find the list of all twitter handles, real names and countries in `data/
 
 ### Output Data
 
-We then fetched all the information from their twitter accounts and stored them in a CSV file: `data/users.csv.`
+#### 1. User Accounts
+
+We then fetched all the information from their twitter accounts and stored them in a CSV file: `data/users.csv`.
 
 **Note**: We added a field called `date_crawled` in which we store the date / time when we fetched the data.  
+
+#### 2. Tweets & Mentions 
+In a second step we downloaded a maximum amount of 200 tweets per account and put them in another CSV file: `data/tweets.csv`. 
+We created a separate CSV file `data/mentions.csv` to store the mentions of the tweets.
