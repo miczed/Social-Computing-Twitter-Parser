@@ -13,7 +13,7 @@ $connection = new TwitterOAuth(API_CONSUMER_KEY, API_CONSUMER_SECRET,API_ACCESS_
 //$tweets = $connection->get("statuses/user_timeline", ["screen_name" => "realDonaldTrump", "count" => 1, "trim_user" => true]);
 
 
-$user_sources = readCSV("data/user_sources.csv");
+$user_sources = readCSV("data/user_sources.partial.csv");
 
 $user_sources_length = count($user_sources);
 
