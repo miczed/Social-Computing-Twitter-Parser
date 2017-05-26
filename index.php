@@ -5,6 +5,51 @@ require_once "keys.php";
 
 use Abraham\TwitterOAuth\TwitterOAuth;
 
+# Imports the Google Cloud client library
+use Google\Cloud\Core\Exception\BadRequestException;
+use Google\Cloud\Language\LanguageClient;
+
+
+sentimentAnalysis('data/tweets.csv','data/tweets_analyzed.csv');
+
+function sentimentAnalysis($inputCSV,$outputCSV) {
+    # Instantiates a client
+    $language = new LanguageClient([
+        'projectId' => PROJECT_ID
+    ]);
+
+
+    $tweets = readCSV($inputCSV);
+    $resultCSV = [];
+    foreach($tweets as $tweet) {
+        $sentiment = analyzeText($tweet[3],$language);
+        if($sentiment) {
+            $result = array_merge($tweet,$sentiment);
+            $resultCSV[] = $result;
+        }
+    }
+    writeToCSV($outputCSV,$resultCSV);
+
+}
+
+function analyzeText($text,$language){
+    # Detects the sentiment of the text
+    try {
+        $annotation = $language->analyzeSentiment($text);
+        $sentiment = $annotation->sentiment();
+        echo "\nText: " . $text . 'Sentiment: ' . $sentiment['score'] . ', ' . $sentiment['magnitude'];
+        return $sentiment;
+
+    } catch (BadRequestException $e) {
+        # Language is not supported
+        echo $e->getMessage();
+        return null;
+    }
+
+}
+
+
+/*
 
 print_r("Connecting to twitter API ...\n");
 
@@ -12,7 +57,7 @@ $connection = new TwitterOAuth(API_CONSUMER_KEY, API_CONSUMER_SECRET,API_ACCESS_
 
 crawlTweets("data/users.csv","data/tweets.csv","data/mentions.csv",$connection);
 //crawlUsers("data/user_sources.partial.csv","data/users.csv",$connection);
-
+*/
 
 function crawlTweets($source_csv,$tweets_csv,$mentions_csv,$connection) {
     $user_sources = readCSV($source_csv);
@@ -129,7 +174,6 @@ function readCSV($url) {
             if($row!=0) { // skip first row
                 $readData[$row] = $data;
             }
-
             $row++;
         }
         fclose($handle);
@@ -138,7 +182,6 @@ function readCSV($url) {
         print_r("FAIL\n");
         return null;
     }
-
 }
 
 function getDateForDatabase(string $date) : string {

@@ -3,7 +3,8 @@
     "description": "A twitter parser which parses tweets of presidents and stores them in a MYSQL db",
     "type": "project",
     "require": {
-        "abraham/twitteroauth": "^0.6.6"
+        "abraham/twitteroauth": "^0.6.6",
+        "google/cloud": "^0.32.0"
     },
     "authors": [
         {
