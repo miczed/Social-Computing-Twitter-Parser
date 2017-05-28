@@ -10,7 +10,18 @@ use Google\Cloud\Core\Exception\BadRequestException;
 use Google\Cloud\Language\LanguageClient;
 
 
-sentimentAnalysis('data/tweets.csv','data/tweets_analyzed.csv');
+sentimentAnalysis('data/tweets_missing.csv','data/tweets_analyzed.partial.csv');
+
+
+/*
+print_r("Connecting to twitter API ...\n");
+
+$connection = new TwitterOAuth(API_CONSUMER_KEY, API_CONSUMER_SECRET,API_ACCESS_TOKEN,API_TOKEN_SECRET );
+
+crawlTweets("data/users_tweets_missing.csv","data/tweets.partial.csv","data/mentions.partial.csv",$connection);
+//crawlUsers("data/user_sources.partial.csv","data/users.csv",$connection);
+
+*/
 
 function sentimentAnalysis($inputCSV,$outputCSV) {
     # Instantiates a client
@@ -20,16 +31,14 @@ function sentimentAnalysis($inputCSV,$outputCSV) {
 
 
     $tweets = readCSV($inputCSV);
-    $resultCSV = [];
+
     foreach($tweets as $tweet) {
         $sentiment = analyzeText($tweet[3],$language);
         if($sentiment) {
             $result = array_merge($tweet,$sentiment);
-            $resultCSV[] = $result;
+            writeToCSV($outputCSV,[$result]);
         }
     }
-    writeToCSV($outputCSV,$resultCSV);
-
 }
 
 function analyzeText($text,$language){
@@ -48,16 +57,6 @@ function analyzeText($text,$language){
 
 }
 
-
-/*
-
-print_r("Connecting to twitter API ...\n");
-
-$connection = new TwitterOAuth(API_CONSUMER_KEY, API_CONSUMER_SECRET,API_ACCESS_TOKEN,API_TOKEN_SECRET );
-
-crawlTweets("data/users.csv","data/tweets.csv","data/mentions.csv",$connection);
-//crawlUsers("data/user_sources.partial.csv","data/users.csv",$connection);
-*/
 
 function crawlTweets($source_csv,$tweets_csv,$mentions_csv,$connection) {
     $user_sources = readCSV($source_csv);
